@@ -81,7 +81,7 @@ public class CommunicationScheduleControllerTest {
 	 * */
 	
 	@Test
-	public void shouldReturnSuccess_WhenRegisterSchedule() throws Exception {
+	public void shouldReturnCreated_WhenRegisterSchedule() throws Exception {
 		ScheduleRequestDto requestBody = createScheduleRequestDto();		
 		CommunicationSchedule expectedSchedule = createValidSchedule();
 		
@@ -98,15 +98,28 @@ public class CommunicationScheduleControllerTest {
 	
 	@Test
 	public void shouldReturnError_WhenRegisterSchedule_WithInvalidSendTime() throws Exception {
-		CommunicationSchedule expectedSchedule = createValidSchedule();
-		LocalDateTime sometimeBeforeNow = LocalDateTime.now().minusDays(1L);
-		expectedSchedule.setDateTimeToSend(sometimeBeforeNow);
+		ScheduleRequestDto badRequest = new ScheduleRequestDto();		
+		badRequest.setReceiver("test receiver");
+		badRequest.setMessage("test message");
 		
-		when(scheduleService.registerSchedule(expectedSchedule)).thenReturn(expectedSchedule);
+		LocalDateTime sometimeBeforeNow = LocalDateTime.now().minusDays(1L);
+		badRequest.setDateTimeToSend(sometimeBeforeNow);
 		
 		mockMvc.perform( MockMvcRequestBuilders
 			      .post("/api/schedule")
-			      .content(asJsonString(expectedSchedule))
+			      .content(asJsonString(badRequest))
+			      .contentType(MediaType.APPLICATION_JSON)
+			      .accept(MediaType.APPLICATION_JSON))
+			      .andExpect(BAD_REQUEST_STATUS);
+	}
+	
+	@Test
+	public void shouldReturnError_WhenRequestHasMissingFields() throws Exception {
+		ScheduleRequestDto badRequest = new ScheduleRequestDto();
+		
+		mockMvc.perform( MockMvcRequestBuilders
+			      .post("/api/schedule")
+			      .content(asJsonString(badRequest))
 			      .contentType(MediaType.APPLICATION_JSON)
 			      .accept(MediaType.APPLICATION_JSON))
 			      .andExpect(BAD_REQUEST_STATUS);
@@ -140,6 +153,10 @@ public class CommunicationScheduleControllerTest {
 			      .accept(MediaType.APPLICATION_JSON))
 			      .andExpect(NOT_FOUND_STATUS);
 	}
+	
+	/*
+	 * Utils
+	 * */
 	
 	private static ScheduleRequestDto createScheduleRequestDto() {
 		return new ScheduleRequestDto("Test Receiver", "Message", LocalDateTime.now().plusHours(1L), Status.NOT_SENT, Channel.EMAIL);
