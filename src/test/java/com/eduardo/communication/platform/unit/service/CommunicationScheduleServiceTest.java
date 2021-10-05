@@ -1,7 +1,10 @@
 package com.eduardo.communication.platform.unit.service;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -9,6 +12,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import com.eduardo.communication.platform.exception.ResourceNotFoundException;
 import com.eduardo.communication.platform.model.Channel;
 import com.eduardo.communication.platform.model.CommunicationSchedule;
 import com.eduardo.communication.platform.model.Status;
@@ -22,6 +26,30 @@ public class CommunicationScheduleServiceTest {
     
 	@InjectMocks
 	private CommunicationScheduleServiceImpl service;	
+	
+	@Test
+	public void shouldReturnSchedule_WhenGetSchedule_AndItExists() {		
+		CommunicationSchedule expectedSchedule = createValidSchedule();
+		Long expectedId = expectedSchedule.getId();		
+		
+		when(repository.findById(expectedId)).thenReturn(Optional.of(expectedSchedule));
+		
+		CommunicationSchedule actualSchedule = service.getSchedule(expectedId);
+		
+		assertEquals(expectedId, actualSchedule.getId());
+	}
+	
+	@Test
+	public void shouldThrowError_WhenGetSchedule_AndItDoesNotExist() {
+		CommunicationSchedule expectedSchedule = createValidSchedule();
+		Long expectedId = expectedSchedule.getId();		
+		
+		when(repository.findById(expectedId)).thenReturn(Optional.empty());
+		
+		assertThrows(ResourceNotFoundException.class, () -> {
+			service.getSchedule(expectedId);
+		});
+	}
 	
 	@Test
 	public void registerSchedule() {
