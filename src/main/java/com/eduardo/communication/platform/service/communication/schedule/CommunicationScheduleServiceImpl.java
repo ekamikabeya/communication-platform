@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 
 import com.eduardo.communication.platform.exception.ResourceNotFoundException;
 import com.eduardo.communication.platform.model.CommunicationSchedule;
+import com.eduardo.communication.platform.model.Status;
 import com.eduardo.communication.platform.repository.CommunicationScheduleRepository;
 
 @Service
@@ -26,6 +27,14 @@ public class CommunicationScheduleServiceImpl implements CommunicationScheduleSe
 	@Override
 	public CommunicationSchedule registerSchedule(CommunicationSchedule schedule) {
 		return repository.save(schedule);		
+	}
+	
+	@Override
+	public CommunicationSchedule updateScheduleStatus(Long id, Status newStatus) {
+		CommunicationSchedule scheduleFromDB = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Schedule not found"));
+		scheduleFromDB.setStatus(newStatus);
+		
+		return repository.save(scheduleFromDB);
 	}
 
 	@Override

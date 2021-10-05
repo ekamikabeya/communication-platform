@@ -61,7 +61,33 @@ public class CommunicationScheduleServiceTest {
 	}	
 
 	@Test
-	public void removeSchedule_IdExists() {
+	public void updateScheduleStatus_WhenIdExists() {
+		CommunicationSchedule expectedSchedule = createValidSchedule();
+		Long expectedId = expectedSchedule.getId();		
+		Status updatedStatus = Status.SENT;
+		
+		when(repository.findById(expectedId)).thenReturn(Optional.of(expectedSchedule));
+		when(repository.save(expectedSchedule)).thenReturn(expectedSchedule);
+		
+		CommunicationSchedule actual = service.updateScheduleStatus(expectedId, updatedStatus);
+		
+		assertEquals(expectedId, actual.getId());
+		assertEquals(updatedStatus, actual.getStatus());
+	}
+	
+	@Test
+	public void updateScheduleStatus_WhenIdDoesNotExist() {
+		Long idNotPresent = 99L;
+		
+		when(repository.findById(idNotPresent)).thenReturn(Optional.empty());
+		
+		assertThrows(ResourceNotFoundException.class, () -> {
+			service.updateScheduleStatus(idNotPresent, any(Status.class));
+		});
+	}
+	
+	@Test
+	public void removeSchedule_WhenIdExists() {
 		CommunicationSchedule expectedSchedule = createValidSchedule();
 		Long expectedId = expectedSchedule.getId();			
 		when(repository.findById(expectedId)).thenReturn(Optional.of(expectedSchedule));
@@ -72,7 +98,7 @@ public class CommunicationScheduleServiceTest {
 	}
 	
 	@Test
-	public void removeSchedule_IdDoesNotExist() {
+	public void removeSchedule_WhenIdDoesNotExist() {
 		Long idNotPresent = 99L;
 		
 		when(repository.findById(idNotPresent)).thenReturn(Optional.empty());

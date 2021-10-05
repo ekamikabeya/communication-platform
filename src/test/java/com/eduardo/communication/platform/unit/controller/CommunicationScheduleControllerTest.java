@@ -112,6 +112,10 @@ public class CommunicationScheduleControllerTest {
 			      .andExpect(BAD_REQUEST_STATUS);
 	}
 	
+	/*
+	 * DELETE /api/schedule/{id}
+	 * */
+	
 	@Test
 	public void shouldRemoveSchedule_WhenRemoveSchedule_AndItDoesExist() throws Exception {
 		CommunicationSchedule expectedSchedule = createValidSchedule();
