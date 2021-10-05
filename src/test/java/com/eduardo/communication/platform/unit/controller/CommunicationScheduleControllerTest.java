@@ -40,6 +40,7 @@ public class CommunicationScheduleControllerTest {
 	
 	private final ResultMatcher OK_STATUS = status().isOk();
 	private final ResultMatcher CREATED_STATUS = status().isCreated();
+	private final ResultMatcher NO_CONTENT_STATUS = status().isNoContent();
 	
 	private final ResultMatcher BAD_REQUEST_STATUS = status().isBadRequest();
 	private final ResultMatcher NOT_FOUND_STATUS = status().isNotFound();
@@ -109,6 +110,31 @@ public class CommunicationScheduleControllerTest {
 			      .contentType(MediaType.APPLICATION_JSON)
 			      .accept(MediaType.APPLICATION_JSON))
 			      .andExpect(BAD_REQUEST_STATUS);
+	}
+	
+	@Test
+	public void shouldRemoveSchedule_WhenRemoveSchedule_AndItDoesExist() throws Exception {
+		CommunicationSchedule expectedSchedule = createValidSchedule();
+		Long expectedId = expectedSchedule.getId();	
+		
+		doNothing().when(scheduleService).removeSchedule(expectedId);
+		
+		mockMvc.perform( MockMvcRequestBuilders
+			      .delete("/api/schedule/{id}", expectedId)
+			      .accept(MediaType.APPLICATION_JSON))
+			      .andExpect(NO_CONTENT_STATUS);
+	}
+	
+	@Test
+	public void  shouldReturnNotFound_WhenRemoveSchedule_AndItDoesNotExist() throws Exception {
+		Long nonExistentScheduleId = 2L;
+		
+		doThrow(ResourceNotFoundException.class).when(scheduleService).removeSchedule(nonExistentScheduleId);
+		
+		mockMvc.perform( MockMvcRequestBuilders
+			      .delete("/api/schedule/{id}", nonExistentScheduleId)
+			      .accept(MediaType.APPLICATION_JSON))
+			      .andExpect(NOT_FOUND_STATUS);
 	}
 	
 	private static ScheduleRequestDto createScheduleRequestDto() {
