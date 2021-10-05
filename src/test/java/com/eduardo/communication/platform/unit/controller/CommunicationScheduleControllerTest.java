@@ -14,6 +14,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import com.eduardo.communication.platform.controller.CommunicationScheduleController;
+import com.eduardo.communication.platform.dto.request.ScheduleRequestDto;
 import com.eduardo.communication.platform.exception.ResourceNotFoundException;
 import com.eduardo.communication.platform.model.Channel;
 import com.eduardo.communication.platform.model.CommunicationSchedule;
@@ -50,20 +51,16 @@ public class CommunicationScheduleControllerTest {
 	@Test
 	public void shouldReturnScheduleStatus_WhenSearchSchedule_AndItDoesExist() throws Exception {
 		CommunicationSchedule expectedSchedule = createValidSchedule();
-		Long expectedId = expectedSchedule.getId();
+		Long expectedId = expectedSchedule.getId();		
 		
 		when(scheduleService.getSchedule(expectedId)).thenReturn(expectedSchedule);
 		
-		MvcResult result = mockMvc.perform( MockMvcRequestBuilders
+		mockMvc.perform( MockMvcRequestBuilders
 			      .get("/api/schedule/{id}", expectedId)
 			      .accept(MediaType.APPLICATION_JSON))
 			      .andExpect(OK_STATUS)
-			      .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(expectedId))
-			      .andExpect(MockMvcResultMatchers.jsonPath("$.status").exists())
-			      .andReturn();
-		
-		String content = result.getResponse().getContentAsString();
-		System.out.println(content);
+			      .andExpect(MockMvcResultMatchers.jsonPath("$.id").exists())
+			      .andExpect(MockMvcResultMatchers.jsonPath("$.status").exists());
 	}
 	
 	@Test
@@ -71,16 +68,11 @@ public class CommunicationScheduleControllerTest {
 		Long nonExistentScheduleId = 2L;
 		
 	    doThrow(ResourceNotFoundException.class).when(scheduleService).getSchedule(nonExistentScheduleId);
-
 		
-		MvcResult result = mockMvc.perform( MockMvcRequestBuilders
+		mockMvc.perform( MockMvcRequestBuilders
 			      .get("/api/schedule/{id}", nonExistentScheduleId)
 			      .accept(MediaType.APPLICATION_JSON))
-			      .andExpect(NOT_FOUND_STATUS)
-			      .andReturn();
-		
-		String content = result.getResponse().getContentAsString();
-		System.out.println(content);
+			      .andExpect(NOT_FOUND_STATUS);
 	}
 	
 	/*
@@ -89,16 +81,18 @@ public class CommunicationScheduleControllerTest {
 	
 	@Test
 	public void shouldReturnSuccess_WhenRegisterSchedule() throws Exception {
+		ScheduleRequestDto requestBody = createScheduleRequestDto();		
 		CommunicationSchedule expectedSchedule = createValidSchedule();
-		doNothing().when(scheduleService).registerSchedule(expectedSchedule);
+		
+		when(scheduleService.registerSchedule(any(CommunicationSchedule.class))).thenReturn(expectedSchedule);
 		
 		mockMvc.perform( MockMvcRequestBuilders
 			      .post("/api/schedule")
-			      .content(asJsonString(expectedSchedule))
+			      .content(asJsonString(requestBody))
 			      .contentType(MediaType.APPLICATION_JSON)
 			      .accept(MediaType.APPLICATION_JSON))
 			      .andExpect(CREATED_STATUS)
-			      .andExpect(MockMvcResultMatchers.jsonPath("$.id").exists());		
+			      .andExpect(MockMvcResultMatchers.jsonPath("$.id").exists());
 	}	
 	
 	@Test
@@ -107,21 +101,29 @@ public class CommunicationScheduleControllerTest {
 		LocalDateTime sometimeBeforeNow = LocalDateTime.now().minusDays(1L);
 		expectedSchedule.setDateTimeToSend(sometimeBeforeNow);
 		
-		doNothing().when(scheduleService).registerSchedule(expectedSchedule);
+		when(scheduleService.registerSchedule(expectedSchedule)).thenReturn(expectedSchedule);
 		
 		mockMvc.perform( MockMvcRequestBuilders
 			      .post("/api/schedule")
 			      .content(asJsonString(expectedSchedule))
 			      .contentType(MediaType.APPLICATION_JSON)
 			      .accept(MediaType.APPLICATION_JSON))
-			      .andExpect(BAD_REQUEST_STATUS)
-			      .andReturn();
+			      .andExpect(BAD_REQUEST_STATUS);
 	}
 	
-	
+	private static ScheduleRequestDto createScheduleRequestDto() {
+		return new ScheduleRequestDto("Test Receiver", "Message", LocalDateTime.now().plusHours(1L), Status.NOT_SENT, Channel.EMAIL);
+	}
 	
 	private static CommunicationSchedule createValidSchedule() {
-		return new CommunicationSchedule(1L, "Test Receiver", "Message", LocalDateTime.now().plusHours(1L), Status.NOT_SENT, Channel.EMAIL);
+		Long valudId = 1L;
+		
+		ScheduleRequestDto request = createScheduleRequestDto();
+		CommunicationSchedule validSchedule = request.build();
+		
+		validSchedule.setId(valudId);
+		
+		return validSchedule;
 	}
 	
 	private static String asJsonString(final Object obj) {

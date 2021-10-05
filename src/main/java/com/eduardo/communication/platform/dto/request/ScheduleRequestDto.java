@@ -1,30 +1,24 @@
-package com.eduardo.communication.platform.model;
+package com.eduardo.communication.platform.dto.request;
 
 import java.time.LocalDateTime;
 
-import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.Table;
 import javax.validation.constraints.FutureOrPresent;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
+import com.eduardo.communication.platform.model.Channel;
+import com.eduardo.communication.platform.model.CommunicationSchedule;
+import com.eduardo.communication.platform.model.Status;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 
-
-@Entity
-@Table(name = "COMMUNICATION_SCHEDULE")
-public class CommunicationSchedule {
-	
-	@Id @GeneratedValue(strategy=GenerationType.IDENTITY)
-	private Long id;
-	
+public class ScheduleRequestDto {
 	@NotNull @NotBlank
 	private String receiver;
 	
@@ -43,10 +37,9 @@ public class CommunicationSchedule {
 	@Enumerated(EnumType.STRING)
 	private Channel channel;
 	
-	public CommunicationSchedule() {
-	}
-
-	public CommunicationSchedule(@NotNull @NotBlank String receiver, @NotNull String message,
+	public ScheduleRequestDto() {}
+	
+	public ScheduleRequestDto(@NotNull @NotBlank String receiver, @NotNull String message,
 			@NotNull @FutureOrPresent LocalDateTime dateTimeToSend, Status status, Channel channel) {
 		super();
 		this.receiver = receiver;
@@ -56,18 +49,15 @@ public class CommunicationSchedule {
 		this.channel = channel;
 	}
 
+	public CommunicationSchedule build() {		
+		return new CommunicationSchedule( this.receiver, this.message,
+				this.dateTimeToSend, this.status, this.channel);
+	}
 
 	@Override
 	public String toString() {
-		return "CommunicationSchedule [id=" + id + ", receiver=" + receiver + ", message=" + message + ", dateTimeToSend="
+		return "ScheduleRequestDto [receiver=" + receiver + ", message=" + message + ", dateTimeToSend="
 				+ dateTimeToSend + ", status=" + status + ", channel=" + channel + "]";
-	}
-	
-	public void setId(Long id) {
-		this.id = id;
-	}
-	public Long getId() {
-		return id;
 	}
 
 	public String getReceiver() {
@@ -109,6 +99,7 @@ public class CommunicationSchedule {
 	public void setChannel(Channel channel) {
 		this.channel = channel;
 	}
-
 	
+	
+
 }

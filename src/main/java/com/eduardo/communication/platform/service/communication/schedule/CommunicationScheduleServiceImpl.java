@@ -23,7 +23,7 @@ public class CommunicationScheduleServiceImpl implements CommunicationScheduleSe
 	}
 
 	@Override
-	public void registerSchedule(CommunicationSchedule schedule) {
-		repository.save(schedule);		
+	public CommunicationSchedule registerSchedule(CommunicationSchedule schedule) {
+		return repository.save(schedule);		
 	}
 }

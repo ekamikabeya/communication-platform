@@ -12,31 +12,33 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.eduardo.communication.platform.dto.request.ScheduleRequestDto;
+import com.eduardo.communication.platform.dto.response.ScheduleResponseDto;
 import com.eduardo.communication.platform.model.CommunicationSchedule;
-import com.eduardo.communication.platform.repository.CommunicationScheduleDto;
 import com.eduardo.communication.platform.service.communication.schedule.CommunicationScheduleService;
 
 @RestController
 @RequestMapping("/api")
 public class CommunicationScheduleController {
-	
+
 	@Autowired
 	private CommunicationScheduleService scheduleService;
-	
+
 	@GetMapping("/schedule/{id}")
-	public ResponseEntity<CommunicationScheduleDto> getSchedule(@PathVariable Long id) {
+	public ResponseEntity<ScheduleResponseDto> getSchedule(@PathVariable Long id) {
 		CommunicationSchedule schedule = scheduleService.getSchedule(id);
-		
-		return new ResponseEntity<>(new CommunicationScheduleDto(schedule), HttpStatus.OK);
+
+		return new ResponseEntity<>(new ScheduleResponseDto(schedule), HttpStatus.OK);
 	}
-	
+
 	@PostMapping("/schedule")
-	public ResponseEntity<CommunicationSchedule> postSchedule(@RequestBody @Valid CommunicationSchedule schedule) {
-		scheduleService.registerSchedule(schedule);
+	public ResponseEntity<CommunicationSchedule> postSchedule(@RequestBody @Valid ScheduleRequestDto scheduleDto) {
+		CommunicationSchedule schedule = scheduleDto.build();
+		CommunicationSchedule created = scheduleService.registerSchedule(schedule);
 		
-		return new ResponseEntity<>(schedule, HttpStatus.CREATED);
+		return new ResponseEntity<>(created, HttpStatus.CREATED);
 	}
-	
+
 	public CommunicationScheduleController() {
 	}
 
