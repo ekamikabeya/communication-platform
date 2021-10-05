@@ -49,17 +49,13 @@ public class CommunicationScheduleControllerTest {
 		CommunicationSchedule expectedSchedule = createValidSchedule();
 		doNothing().when(scheduleService).registerSchedule(expectedSchedule);
 		
-		MvcResult result = mockMvc.perform( MockMvcRequestBuilders
+		mockMvc.perform( MockMvcRequestBuilders
 			      .post("/api/schedule")
 			      .content(asJsonString(expectedSchedule))
 			      .contentType(MediaType.APPLICATION_JSON)
 			      .accept(MediaType.APPLICATION_JSON))
 			      .andExpect(CREATED_STATUS)
-			      .andExpect(MockMvcResultMatchers.jsonPath("$.id").exists())
-			      .andReturn();
-		
-		String content = result.getResponse().getContentAsString();
-		System.out.println(content);
+			      .andExpect(MockMvcResultMatchers.jsonPath("$.id").exists());		
 	}	
 	
 	@Test
@@ -70,18 +66,13 @@ public class CommunicationScheduleControllerTest {
 		
 		doNothing().when(scheduleService).registerSchedule(expectedSchedule);
 		
-		System.out.println(asJsonString(expectedSchedule));
-		
-		MvcResult result = mockMvc.perform( MockMvcRequestBuilders
+		mockMvc.perform( MockMvcRequestBuilders
 			      .post("/api/schedule")
 			      .content(asJsonString(expectedSchedule))
 			      .contentType(MediaType.APPLICATION_JSON)
 			      .accept(MediaType.APPLICATION_JSON))
 			      .andExpect(BAD_REQUEST_STATUS)
 			      .andReturn();
-		
-		String content = result.getResponse().getContentAsString();
-		System.out.println(content);
 	}
 	
 	private static CommunicationSchedule createValidSchedule() {
