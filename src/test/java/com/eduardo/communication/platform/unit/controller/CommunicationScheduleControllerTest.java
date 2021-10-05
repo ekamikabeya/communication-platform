@@ -38,6 +38,11 @@ public class CommunicationScheduleControllerTest {
 	private CommunicationScheduleService scheduleService;	
 	
 	private final ResultMatcher CREATED_STATUS = status().isCreated();
+	private final ResultMatcher BAD_REQUEST_STATUS = status().isBadRequest();
+	
+	/*
+	 * POST /api/schedule
+	 * */
 	
 	@Test
 	public void shouldReturnSuccess_WhenRegisterSchedule() throws Exception {
@@ -56,6 +61,28 @@ public class CommunicationScheduleControllerTest {
 		String content = result.getResponse().getContentAsString();
 		System.out.println(content);
 	}	
+	
+	@Test
+	public void shouldReturnError_WhenRegisterSchedule_WithInvalidSendTime() throws Exception {
+		CommunicationSchedule expectedSchedule = createValidSchedule();
+		LocalDateTime sometimeBeforeNow = LocalDateTime.now().minusDays(1L);
+		expectedSchedule.setDateTimeToSend(sometimeBeforeNow);
+		
+		doNothing().when(scheduleService).registerSchedule(expectedSchedule);
+		
+		System.out.println(asJsonString(expectedSchedule));
+		
+		MvcResult result = mockMvc.perform( MockMvcRequestBuilders
+			      .post("/api/schedule")
+			      .content(asJsonString(expectedSchedule))
+			      .contentType(MediaType.APPLICATION_JSON)
+			      .accept(MediaType.APPLICATION_JSON))
+			      .andExpect(BAD_REQUEST_STATUS)
+			      .andReturn();
+		
+		String content = result.getResponse().getContentAsString();
+		System.out.println(content);
+	}
 	
 	private static CommunicationSchedule createValidSchedule() {
 		return new CommunicationSchedule(1L, "Test Receiver", "Message", LocalDateTime.now().plusHours(1L), Status.NOT_SENT, Channel.EMAIL);
