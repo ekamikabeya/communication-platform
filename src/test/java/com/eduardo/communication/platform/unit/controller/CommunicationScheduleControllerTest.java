@@ -37,8 +37,51 @@ public class CommunicationScheduleControllerTest {
 	@MockBean
 	private CommunicationScheduleService scheduleService;	
 	
+	private final ResultMatcher OK_STATUS = status().isOk();
 	private final ResultMatcher CREATED_STATUS = status().isCreated();
+	
 	private final ResultMatcher BAD_REQUEST_STATUS = status().isBadRequest();
+	private final ResultMatcher NOT_FOUND_STATUS = status().isNotFound();
+	
+	/*
+	 * GET /api/schedule/{id}
+	 * */
+	
+	@Test
+	public void shouldReturnScheduleStatus_WhenSearchSchedule_AndItDoesExist() throws Exception {
+		CommunicationSchedule expectedSchedule = createValidSchedule();
+		Long expectedId = expectedSchedule.getId();
+		
+		when(scheduleService.getSchedule(expectedId)).thenReturn(expectedSchedule);
+		
+		MvcResult result = mockMvc.perform( MockMvcRequestBuilders
+			      .get("/api/schedule/{id}", expectedId)
+			      .accept(MediaType.APPLICATION_JSON))
+			      .andExpect(OK_STATUS)
+			      .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(expectedId))
+			      .andExpect(MockMvcResultMatchers.jsonPath("$.status").exists())
+			      .andReturn();
+		
+		String content = result.getResponse().getContentAsString();
+		System.out.println(content);
+	}
+	
+	@Test
+	public void shouldReturnNotFound_WhenSearchSchedule_AndItDoesNotExist() throws Exception {
+		Long nonExistentScheduleId = 2L;
+		
+	    doThrow(ResourceNotFoundException.class).when(scheduleService).getSchedule(nonExistentScheduleId);
+
+		
+		MvcResult result = mockMvc.perform( MockMvcRequestBuilders
+			      .get("/api/schedule/{id}", nonExistentScheduleId)
+			      .accept(MediaType.APPLICATION_JSON))
+			      .andExpect(NOT_FOUND_STATUS)
+			      .andReturn();
+		
+		String content = result.getResponse().getContentAsString();
+		System.out.println(content);
+	}
 	
 	/*
 	 * POST /api/schedule
@@ -74,6 +117,8 @@ public class CommunicationScheduleControllerTest {
 			      .andExpect(BAD_REQUEST_STATUS)
 			      .andReturn();
 	}
+	
+	
 	
 	private static CommunicationSchedule createValidSchedule() {
 		return new CommunicationSchedule(1L, "Test Receiver", "Message", LocalDateTime.now().plusHours(1L), Status.NOT_SENT, Channel.EMAIL);
