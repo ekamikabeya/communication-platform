@@ -9,7 +9,8 @@ import com.eduardo.communication.platform.repository.CommunicationScheduleReposi
 
 @Service
 public class CommunicationScheduleServiceImpl implements CommunicationScheduleService {
-
+	private final String SCHEDULE_NOT_FOUND_MESSAGE = "Schedule not found";
+	
 	@Autowired
 	private CommunicationScheduleRepository repository;
 	
@@ -19,11 +20,18 @@ public class CommunicationScheduleServiceImpl implements CommunicationScheduleSe
 	
 	@Override
 	public CommunicationSchedule getSchedule(Long id) {		
-		return repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Schedule not found"));
+		return repository.findById(id).orElseThrow(() -> new ResourceNotFoundException(SCHEDULE_NOT_FOUND_MESSAGE));
 	}
 
 	@Override
 	public CommunicationSchedule registerSchedule(CommunicationSchedule schedule) {
 		return repository.save(schedule);		
+	}
+
+	@Override
+	public void removeSchedule(Long id) {
+		repository.findById(id).orElseThrow(() -> new ResourceNotFoundException(SCHEDULE_NOT_FOUND_MESSAGE));
+		
+		repository.deleteById(id);		
 	}
 }

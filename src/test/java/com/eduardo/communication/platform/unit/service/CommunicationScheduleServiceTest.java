@@ -58,6 +58,30 @@ public class CommunicationScheduleServiceTest {
 		service.registerSchedule(expectedSchedule);
 		
 		verify(repository).save(expectedSchedule);
+	}	
+
+	@Test
+	public void removeSchedule_IdExists() {
+		CommunicationSchedule expectedSchedule = createValidSchedule();
+		Long expectedId = expectedSchedule.getId();			
+		when(repository.findById(expectedId)).thenReturn(Optional.of(expectedSchedule));
+		
+		service.removeSchedule(expectedId);
+		
+		verify(repository).deleteById(expectedId);
+	}
+	
+	@Test
+	public void removeSchedule_IdDoesNotExist() {
+		Long idNotPresent = 99L;
+		
+		when(repository.findById(idNotPresent)).thenReturn(Optional.empty());
+		
+		assertThrows(ResourceNotFoundException.class, () -> {
+			service.removeSchedule(idNotPresent);
+		});		
+		
+		verify(repository, never()).deleteById(idNotPresent);
 	}
 	
 	private static CommunicationSchedule createValidSchedule() {
