@@ -28,18 +28,11 @@ public class ControllerExceptionHandler {
 	
 	@ExceptionHandler(MethodArgumentNotValidException.class)
 	@ResponseStatus(value = HttpStatus.BAD_REQUEST)
-	public ErrorResponse methodArgumentNotValidException(MethodArgumentNotValidException ex, WebRequest request) {
-		List<FieldError> fieldErrors = ex.getBindingResult().getFieldErrors();
-		
-		StringBuilder errorMessage = new StringBuilder(); 
-		fieldErrors.forEach(e -> {
-			errorMessage.append("Field: " + e.getField() + " - " + e.getDefaultMessage());
-        });
-		
+	public ErrorResponse methodArgumentNotValidException(MethodArgumentNotValidException ex, WebRequest request) {		
 	    ErrorResponse message = new ErrorResponse(
 	        HttpStatus.BAD_REQUEST.value(),
 	        new Date(),
-	        errorMessage.toString(),
+	        createErrorMessage(ex.getBindingResult().getFieldErrors()),
 	        request.getDescription(false));
 	    
 	    return message;
@@ -55,5 +48,14 @@ public class ControllerExceptionHandler {
 	        request.getDescription(false));
 	    
 	    return message;
+	}
+	
+	private String createErrorMessage(List<FieldError> fieldErrors) {
+		StringBuilder errorMessage = new StringBuilder(); 
+		fieldErrors.forEach(e -> {
+			errorMessage.append("Field: " + e.getField() + " - " + e.getDefaultMessage());
+        });
+		
+		return errorMessage.toString();
 	}
 }
