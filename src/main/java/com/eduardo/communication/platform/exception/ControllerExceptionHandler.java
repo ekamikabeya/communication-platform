@@ -1,8 +1,10 @@
 package com.eduardo.communication.platform.exception;
 
 import java.util.Date;
+import java.util.List;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -14,8 +16,8 @@ public class ControllerExceptionHandler {
 	
 	@ExceptionHandler(ResourceNotFoundException.class)
 	@ResponseStatus(value = HttpStatus.NOT_FOUND)
-	public ErrorMessage resourceNotFoundException(ResourceNotFoundException ex, WebRequest request) {
-	    ErrorMessage message = new ErrorMessage(
+	public ErrorResponse resourceNotFoundException(ResourceNotFoundException ex, WebRequest request) {
+	    ErrorResponse message = new ErrorResponse(
 	        HttpStatus.NOT_FOUND.value(),
 	        new Date(),
 	        ex.getMessage(),
@@ -26,11 +28,18 @@ public class ControllerExceptionHandler {
 	
 	@ExceptionHandler(MethodArgumentNotValidException.class)
 	@ResponseStatus(value = HttpStatus.BAD_REQUEST)
-	public ErrorMessage methodArgumentNotValidException(MethodArgumentNotValidException ex, WebRequest request) {
-	    ErrorMessage message = new ErrorMessage(
+	public ErrorResponse methodArgumentNotValidException(MethodArgumentNotValidException ex, WebRequest request) {
+		List<FieldError> fieldErrors = ex.getBindingResult().getFieldErrors();
+		
+		StringBuilder errorMessage = new StringBuilder(); 
+		fieldErrors.forEach(e -> {
+			errorMessage.append("Field: " + e.getField() + " - " + e.getDefaultMessage());
+        });
+		
+	    ErrorResponse message = new ErrorResponse(
 	        HttpStatus.BAD_REQUEST.value(),
 	        new Date(),
-	        ex.getMessage(),
+	        errorMessage.toString(),
 	        request.getDescription(false));
 	    
 	    return message;
@@ -38,8 +47,8 @@ public class ControllerExceptionHandler {
 	
 	@ExceptionHandler(Exception.class)
 	@ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
-	public ErrorMessage globalExceptionHandler(Exception ex, WebRequest request) {
-	    ErrorMessage message = new ErrorMessage(
+	public ErrorResponse globalExceptionHandler(Exception ex, WebRequest request) {
+	    ErrorResponse message = new ErrorResponse(
 	        HttpStatus.INTERNAL_SERVER_ERROR.value(),
 	        new Date(),
 	        ex.getMessage(),
