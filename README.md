@@ -14,11 +14,10 @@ Plataforma de gerenciamento de agendamentos de envio de comunicações
 ## Como executar
 
   Na raíz do projeto:
-    1 - Iniciar banco de dados:
-      docker-compose up -d
-
-    2 - Iniciar aplicação Maven:
-      mvn spring-boot:run
+  <ol>
+    <li> Iniciar banco de dados: docker-compose up -d</li>
+    <li> Iniciar aplicação Maven: mvn spring-boot:run</li>       
+  </ol>
 
   <p>obs. A aplicação está configurada para rodar na porta 8082. Caso seja necessário utilizar outra porta, alterar o valor de "server.port" no arquivo src\main\resources\application.properties</p>
 
@@ -27,7 +26,7 @@ Plataforma de gerenciamento de agendamentos de envio de comunicações
   <p>Exemplos de requisição:</p>
 
   Endpoint 1: Registra a solicitação do agendamento do envio da comunicação, e retorna o ID do agendamento.
-`
+  ```
     curl --location --request POST 'localhost:8082/api/schedule' \
     --header 'Content-Type: application/json' \
     --data-raw '{
@@ -36,16 +35,16 @@ Plataforma de gerenciamento de agendamentos de envio de comunicações
         "message": "messagem a ser enviada",
         "channel": "PUSH"
     }'
-`
+  ```
   Endpoint 2: Consultar o status do agendamento de envio de comunicação.
-  `  
+  ```
     curl --location --request GET 'localhost:8082/api/schedule/1'
-  `
+  ```
 
   Endpoint 3: Remover um agendamento de envio de comunicação.
-  `
+  ```
     curl --location --request DELETE 'localhost:8082/api/schedule/2'
-  `
+  ```
   
   Coleção com as chamadas utilizadas durante o desenvolvimento:
   https://www.getpostman.com/collections/fb5c4a92721a63e44705
