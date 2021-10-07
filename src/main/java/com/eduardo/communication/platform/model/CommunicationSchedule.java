@@ -47,12 +47,11 @@ public class CommunicationSchedule {
 	}
 
 	public CommunicationSchedule(@NotNull @NotBlank String receiver, @NotNull String message,
-			@NotNull @FutureOrPresent LocalDateTime dateTimeToSend, Status status, Channel channel) {
+			@NotNull @FutureOrPresent LocalDateTime dateTimeToSend, Channel channel) {
 		super();
 		this.receiver = receiver;
 		this.message = message;
 		this.dateTimeToSend = dateTimeToSend;
-		this.status = status;
 		this.channel = channel;
 	}
 

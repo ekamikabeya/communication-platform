@@ -26,35 +26,30 @@ public class ScheduleRequestDto {
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
 	@JsonDeserialize(using = LocalDateTimeDeserializer.class)
 	@FutureOrPresent
-	private LocalDateTime dateTimeToSend;
+	private LocalDateTime dateTimeToSend;;
 	
-	@Enumerated(EnumType.STRING)
-	private Status status = Status.NOT_SENT;
-	
-	@Enumerated(EnumType.STRING)
 	private Channel channel;
 	
 	public ScheduleRequestDto() {}
 	
 	public ScheduleRequestDto(@NotNull @NotBlank String receiver, @NotNull String message,
-			@NotNull @FutureOrPresent LocalDateTime dateTimeToSend, Status status, Channel channel) {
+			@NotNull @FutureOrPresent LocalDateTime dateTimeToSend, Channel channel) {
 		super();
 		this.receiver = receiver;
 		this.message = message;
 		this.dateTimeToSend = dateTimeToSend;
-		this.status = status;
 		this.channel = channel;
 	}
 
 	public CommunicationSchedule build() {		
 		return new CommunicationSchedule( this.receiver, this.message,
-				this.dateTimeToSend, this.status, this.channel);
+				this.dateTimeToSend, this.channel);
 	}
 
 	@Override
 	public String toString() {
 		return "ScheduleRequestDto [receiver=" + receiver + ", message=" + message + ", dateTimeToSend="
-				+ dateTimeToSend + ", status=" + status + ", channel=" + channel + "]";
+				+ dateTimeToSend + ", channel=" + channel + "]";
 	}
 
 	public String getReceiver() {
@@ -79,14 +74,6 @@ public class ScheduleRequestDto {
 
 	public void setDateTimeToSend(LocalDateTime dateTimeToSend) {
 		this.dateTimeToSend = dateTimeToSend;
-	}
-
-	public Status getStatus() {
-		return status;
-	}
-
-	public void setStatus(Status status) {
-		this.status = status;
 	}
 
 	public Channel getChannel() {

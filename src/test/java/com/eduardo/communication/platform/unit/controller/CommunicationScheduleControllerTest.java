@@ -159,7 +159,7 @@ public class CommunicationScheduleControllerTest {
 	 * */
 	
 	private static ScheduleRequestDto createScheduleRequestDto() {
-		return new ScheduleRequestDto("Test Receiver", "Message", LocalDateTime.now().plusHours(1L), Status.NOT_SENT, Channel.EMAIL);
+		return new ScheduleRequestDto("Test Receiver", "Message", LocalDateTime.now().plusHours(1L), Channel.EMAIL);
 	}
 	
 	private static CommunicationSchedule createValidSchedule() {

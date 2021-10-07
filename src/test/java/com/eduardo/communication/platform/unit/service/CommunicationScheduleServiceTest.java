@@ -111,6 +111,6 @@ public class CommunicationScheduleServiceTest {
 	}
 	
 	private static CommunicationSchedule createValidSchedule() {
-		return new CommunicationSchedule("Test Receiver", "Message", LocalDateTime.now().plusHours(1L), Status.NOT_SENT, Channel.EMAIL);
+		return new CommunicationSchedule("Test Receiver", "Message", LocalDateTime.now().plusHours(1L), Channel.EMAIL);
 	}
 }
