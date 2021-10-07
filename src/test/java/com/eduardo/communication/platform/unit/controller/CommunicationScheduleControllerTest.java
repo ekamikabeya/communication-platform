@@ -81,7 +81,7 @@ public class CommunicationScheduleControllerTest {
 	 * */
 	
 	@Test
-	public void shouldReturnCreated_WhenRegisterSchedule() throws Exception {
+	public void shouldReturnCreated_WhenRegisterSchedule_WithValidFields() throws Exception {
 		ScheduleRequestDto requestBody = createScheduleRequestDto();		
 		CommunicationSchedule expectedSchedule = createValidSchedule();
 		
@@ -94,10 +94,15 @@ public class CommunicationScheduleControllerTest {
 			      .accept(MediaType.APPLICATION_JSON))
 			      .andExpect(CREATED_STATUS)
 			      .andExpect(MockMvcResultMatchers.jsonPath("$.id").exists());
-	}	
+	}
+	
+	/*
+	 * POST /api/schedule
+	 * Testing invalid values
+	 * */
 	
 	@Test
-	public void shouldReturnError_WhenRegisterSchedule_WithInvalidSendTime() throws Exception {
+	public void shouldReturnError_WhenRegisterSchedule_HasInvalidSendTime() throws Exception {
 		ScheduleRequestDto badRequest = new ScheduleRequestDto();		
 		badRequest.setReceiver("test receiver");
 		badRequest.setMessage("test message");
@@ -105,39 +110,61 @@ public class CommunicationScheduleControllerTest {
 		LocalDateTime sometimeBeforeNow = LocalDateTime.now().minusDays(1L);
 		badRequest.setDateTimeToSend(sometimeBeforeNow);
 		
-		mockMvc.perform( MockMvcRequestBuilders
-			      .post("/api/schedule")
-			      .content(asJsonString(badRequest))
-			      .contentType(MediaType.APPLICATION_JSON)
-			      .accept(MediaType.APPLICATION_JSON))
-			      .andExpect(BAD_REQUEST_STATUS);
+		validatePostWithBadRequest(badRequest);
 	}
 	
 	@Test
-	public void shouldReturnError_WhenRequestHasInvalidChannel() throws Exception {
+	public void shouldReturnError_WhenRequest_HasInvalidChannel() throws Exception {
 		String NOT_VALID_CHANNEL = "NOT_VALID_CHANNEL";
 		
 		ScheduleRequestDto badRequest = createScheduleRequestDto();
 		badRequest.setChannel(NOT_VALID_CHANNEL);
 		
-		mockMvc.perform( MockMvcRequestBuilders
-			      .post("/api/schedule")
-			      .content(asJsonString(badRequest))
-			      .contentType(MediaType.APPLICATION_JSON)
-			      .accept(MediaType.APPLICATION_JSON))
-			      .andExpect(BAD_REQUEST_STATUS);
+		validatePostWithBadRequest(badRequest);
+	}
+	
+	/*
+	 * POST /api/schedule
+	 * Testing missing mandatory fields
+	 * */
+	
+	@Test
+	public void shouldReturnError_WhenRequest_HasMissingFields() throws Exception {
+		ScheduleRequestDto badRequest = new ScheduleRequestDto();
+		
+		validatePostWithBadRequest(badRequest);
 	}
 	
 	@Test
-	public void shouldReturnError_WhenRequestHasMissingFields() throws Exception {
-		ScheduleRequestDto badRequest = new ScheduleRequestDto();
+	public void shouldReturnError_WhenRequest_IsMissingReceiver() throws Exception {
+		ScheduleRequestDto requestBody = createScheduleRequestDto();
+		requestBody.setReceiver(null);
 		
-		mockMvc.perform( MockMvcRequestBuilders
-			      .post("/api/schedule")
-			      .content(asJsonString(badRequest))
-			      .contentType(MediaType.APPLICATION_JSON)
-			      .accept(MediaType.APPLICATION_JSON))
-			      .andExpect(BAD_REQUEST_STATUS);
+		validatePostWithBadRequest(requestBody);
+	}
+	
+	@Test
+	public void shouldReturnError_WhenRequest_IsMissingMessage() throws Exception {
+		ScheduleRequestDto requestBody = createScheduleRequestDto();
+		requestBody.setMessage(null);
+		
+		validatePostWithBadRequest(requestBody);
+	}
+	
+	@Test
+	public void shouldReturnError_WhenRegisterSchedule_isMissingSendTime() throws Exception {
+		ScheduleRequestDto requestBody = createScheduleRequestDto();
+		requestBody.setDateTimeToSend(null);		
+		
+		validatePostWithBadRequest(requestBody);
+	}
+	
+	@Test
+	public void shouldReturnError_WhenRegisterSchedule_isMissingChannel() throws Exception {
+		ScheduleRequestDto requestBody = createScheduleRequestDto();
+		requestBody.setChannel(null);		
+		
+		validatePostWithBadRequest(requestBody);
 	}
 	
 	/*
@@ -172,6 +199,15 @@ public class CommunicationScheduleControllerTest {
 	/*
 	 * Utils
 	 * */
+	
+	private void validatePostWithBadRequest(ScheduleRequestDto request) throws Exception {
+		mockMvc.perform( MockMvcRequestBuilders
+			      .post("/api/schedule")
+			      .content(asJsonString(request))
+			      .contentType(MediaType.APPLICATION_JSON)
+			      .accept(MediaType.APPLICATION_JSON))
+			      .andExpect(BAD_REQUEST_STATUS);
+	}
 	
 	private static ScheduleRequestDto createScheduleRequestDto() {
 		return new ScheduleRequestDto("Test Receiver", "Message", LocalDateTime.now().plusHours(1L), "EMAIL");
