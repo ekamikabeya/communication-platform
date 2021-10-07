@@ -28,6 +28,7 @@ public class ScheduleRequestDto {
 	@FutureOrPresent
 	private LocalDateTime dateTimeToSend;;
 	
+	@NotNull
 	private String channel;
 	
 	public ScheduleRequestDto() {}

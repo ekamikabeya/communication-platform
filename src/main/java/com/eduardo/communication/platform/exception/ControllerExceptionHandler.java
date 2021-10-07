@@ -32,7 +32,7 @@ public class ControllerExceptionHandler {
 	    ErrorResponse message = new ErrorResponse(
 	        HttpStatus.BAD_REQUEST.value(),
 	        new Date(),
-	        createErrorMessage(ex.getBindingResult().getFieldErrors()),
+	        ErrorMessageFormatter.format(ex.getBindingResult().getFieldErrors()),
 	        request.getDescription(false));
 	    
 	    return message;
@@ -60,14 +60,5 @@ public class ControllerExceptionHandler {
 	        request.getDescription(false));
 	    
 	    return message;
-	}
-	
-	private String createErrorMessage(List<FieldError> fieldErrors) {
-		StringBuilder errorMessage = new StringBuilder(); 
-		fieldErrors.forEach(e -> {
-			errorMessage.append("Field: " + e.getField() + " - " + e.getDefaultMessage());
-        });
-		
-		return errorMessage.toString();
 	}
 }
