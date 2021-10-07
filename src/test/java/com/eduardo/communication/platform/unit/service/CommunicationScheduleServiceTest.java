@@ -12,7 +12,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import com.eduardo.communication.platform.exception.ResourceNotFoundException;
+import com.eduardo.communication.platform.exception.exceptions.ResourceNotFoundException;
 import com.eduardo.communication.platform.model.Channel;
 import com.eduardo.communication.platform.model.CommunicationSchedule;
 import com.eduardo.communication.platform.model.Status;

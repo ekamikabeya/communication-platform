@@ -1,4 +1,4 @@
-package com.eduardo.communication.platform.exception;
+package com.eduardo.communication.platform.exception.utils;
 
 import java.util.List;
 

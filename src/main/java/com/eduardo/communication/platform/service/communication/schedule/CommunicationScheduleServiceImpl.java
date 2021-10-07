@@ -3,7 +3,7 @@ package com.eduardo.communication.platform.service.communication.schedule;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.eduardo.communication.platform.exception.ResourceNotFoundException;
+import com.eduardo.communication.platform.exception.exceptions.ResourceNotFoundException;
 import com.eduardo.communication.platform.model.CommunicationSchedule;
 import com.eduardo.communication.platform.model.Status;
 import com.eduardo.communication.platform.repository.CommunicationScheduleRepository;

@@ -11,6 +11,9 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 
+import com.eduardo.communication.platform.exception.exceptions.ResourceNotFoundException;
+import com.eduardo.communication.platform.exception.utils.ErrorMessageFormatter;
+
 @RestControllerAdvice
 public class ControllerExceptionHandler {
 	

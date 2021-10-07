@@ -1,4 +1,4 @@
-package com.eduardo.communication.platform.exception;
+package com.eduardo.communication.platform.exception.exceptions;
 
 public class ResourceNotFoundException extends RuntimeException {
 
