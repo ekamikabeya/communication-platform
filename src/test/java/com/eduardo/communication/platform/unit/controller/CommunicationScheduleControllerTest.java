@@ -114,6 +114,21 @@ public class CommunicationScheduleControllerTest {
 	}
 	
 	@Test
+	public void shouldReturnError_WhenRequestHasInvalidChannel() throws Exception {
+		String NOT_VALID_CHANNEL = "NOT_VALID_CHANNEL";
+		
+		ScheduleRequestDto badRequest = createScheduleRequestDto();
+		badRequest.setChannel(NOT_VALID_CHANNEL);
+		
+		mockMvc.perform( MockMvcRequestBuilders
+			      .post("/api/schedule")
+			      .content(asJsonString(badRequest))
+			      .contentType(MediaType.APPLICATION_JSON)
+			      .accept(MediaType.APPLICATION_JSON))
+			      .andExpect(BAD_REQUEST_STATUS);
+	}
+	
+	@Test
 	public void shouldReturnError_WhenRequestHasMissingFields() throws Exception {
 		ScheduleRequestDto badRequest = new ScheduleRequestDto();
 		
@@ -159,7 +174,7 @@ public class CommunicationScheduleControllerTest {
 	 * */
 	
 	private static ScheduleRequestDto createScheduleRequestDto() {
-		return new ScheduleRequestDto("Test Receiver", "Message", LocalDateTime.now().plusHours(1L), Channel.EMAIL);
+		return new ScheduleRequestDto("Test Receiver", "Message", LocalDateTime.now().plusHours(1L), "EMAIL");
 	}
 	
 	private static CommunicationSchedule createValidSchedule() {

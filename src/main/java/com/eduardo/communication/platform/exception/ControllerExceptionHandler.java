@@ -38,6 +38,18 @@ public class ControllerExceptionHandler {
 	    return message;
 	}
 	
+	@ExceptionHandler(IllegalArgumentException.class)
+	@ResponseStatus(value = HttpStatus.BAD_REQUEST)
+	public ErrorResponse illegalArgumentExceptionException(IllegalArgumentException ex, WebRequest request) {		
+	    ErrorResponse message = new ErrorResponse(
+	        HttpStatus.BAD_REQUEST.value(),
+	        new Date(),
+	        ex.getMessage(),
+	        request.getDescription(false));
+	    
+	    return message;
+	}
+	
 	@ExceptionHandler(Exception.class)
 	@ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
 	public ErrorResponse globalExceptionHandler(Exception ex, WebRequest request) {

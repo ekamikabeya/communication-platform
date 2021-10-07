@@ -28,12 +28,12 @@ public class ScheduleRequestDto {
 	@FutureOrPresent
 	private LocalDateTime dateTimeToSend;;
 	
-	private Channel channel;
+	private String channel;
 	
 	public ScheduleRequestDto() {}
 	
 	public ScheduleRequestDto(@NotNull @NotBlank String receiver, @NotNull String message,
-			@NotNull @FutureOrPresent LocalDateTime dateTimeToSend, Channel channel) {
+			@NotNull @FutureOrPresent LocalDateTime dateTimeToSend, String channel) {
 		super();
 		this.receiver = receiver;
 		this.message = message;
@@ -41,9 +41,9 @@ public class ScheduleRequestDto {
 		this.channel = channel;
 	}
 
-	public CommunicationSchedule build() {		
+	public CommunicationSchedule build(){	
 		return new CommunicationSchedule( this.receiver, this.message,
-				this.dateTimeToSend, this.channel);
+				this.dateTimeToSend, Channel.getChannelFromString(channel));
 	}
 
 	@Override
@@ -76,11 +76,11 @@ public class ScheduleRequestDto {
 		this.dateTimeToSend = dateTimeToSend;
 	}
 
-	public Channel getChannel() {
+	public String getChannel() {
 		return channel;
 	}
 
-	public void setChannel(Channel channel) {
+	public void setChannel(String channel) {
 		this.channel = channel;
 	}
 	
