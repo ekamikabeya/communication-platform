@@ -16,7 +16,7 @@ public enum Channel {
 	
     public static Channel getChannelFromString(String value){
     	try {
-    		return valueOf(value);
+    		return valueOf(value.toUpperCase());
     	} catch (IllegalArgumentException ex) {
     		throw new IllegalArgumentException("Invalid channel: " + value + ". Expected " + Arrays.toString(values()));
     	}
